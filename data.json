@@ -1,5 +1,5 @@
 {
-  "generado": "07/11/2026 11:39:03",
+  "generado": "07/11/2026 12:09:18",
   "inventario": [
     {
       "id": 330,
@@ -112,9 +112,9 @@
       "tipo": "Consumible",
       "nombre": "Alcohol  70°",
       "total": 1250.0,
-      "reservado": 1.0,
+      "reservado": 1000.0,
       "en_uso": 0,
-      "disponible": 1249.0,
+      "disponible": 250.0,
       "unidad": "mililitros",
       "stock_minimo": 0,
       "marca": "Alkofarma",
