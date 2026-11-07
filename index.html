@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio Integrado de Investigación - Solo Lectura</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+       background: #f0f2f5; color: #212121; }
+header { background: linear-gradient(135deg, #1a237e, #283593);
+         color: #fff; padding: 18px 24px; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+header h1 { font-size: 20px; }
+header .sub { font-size: 12px; opacity: .8; margin-top: 4px; }
+.tabs { display: flex; background: #fff; border-bottom: 2px solid #e0e0e0;
+        overflow-x: auto; }
+.tab { padding: 14px 22px; cursor: pointer; font-weight: 600; font-size: 14px;
+       border: none; background: none; color: #616161;
+       border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { background: #f5f5f5; }
+.tab.active { color: #1a237e; border-bottom-color: #1a237e; }
+.content { padding: 20px; }
+.panel { display: none; }
+.panel.active { display: block; }
+.search { margin-bottom: 12px; padding: 8px 12px; width: 100%;
+          max-width: 400px; border: 1px solid #ccc; border-radius: 4px;
+          font-size: 14px; }
+table { width: 100%; border-collapse: collapse; background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,.08); font-size: 13px; }
+th { background: #1a237e; color: #fff; padding: 10px 8px;
+     text-align: left; font-weight: 600; font-size: 12px;
+     position: sticky; top: 0; }
+td { padding: 8px; border-bottom: 1px solid #eee; }
+tr:hover { background: #f5f9ff; cursor: pointer; }
+tr.critico { background: #ffebee; }
+tr.critico:hover { background: #ffcdd2; }
+.sin-datos { padding: 40px; text-align: center; color: #9e9e9e;
+             font-style: italic; }
+.modal-bg { display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,.6); z-index: 1000;
+            align-items: center; justify-content: center; padding: 20px; }
+.modal-bg.show { display: flex; }
+.modal { background: #fff; border-radius: 8px; max-width: 720px;
+         width: 100%; max-height: 90vh; overflow-y: auto;
+         box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+.modal-header { background: #1a237e; color: #fff; padding: 16px 20px;
+                display: flex; justify-content: space-between;
+                align-items: center; border-radius: 8px 8px 0 0; }
+.modal-header h2 { font-size: 17px; }
+.modal-close { background: none; border: none; color: #fff;
+               font-size: 24px; cursor: pointer; line-height: 1; }
+.modal-body { padding: 20px; }
+.detalle-grid { display: grid; grid-template-columns: 140px 1fr;
+                gap: 8px 12px; font-size: 13px; }
+.detalle-grid .lbl { font-weight: 600; color: #555; }
+.detalle-grid .val { color: #212121; word-break: break-word; }
+footer { text-align: center; padding: 20px; color: #9e9e9e;
+         font-size: 11px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
+         font-size: 11px; font-weight: 600; }
+.badge.verde { background: #c8e6c9; color: #2e7d32; }
+.badge.rojo { background: #ffcdd2; color: #c62828; }
+.badge.naranja { background: #ffe0b2; color: #e65100; }
+.badge.azul { background: #bbdefb; color: #1565c0; }
+@media (max-width: 600px) {
+  .detalle-grid { grid-template-columns: 1fr; }
+  .detalle-grid .lbl { margin-top: 6px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧬 Laboratorio Integrado de Investigación</h1>
+  <div class="sub">Universidad Continental — Vista de solo lectura ·
+    <span id="fecha-gen">cargando…</span></div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="inventario">📦 Inventario</button>
+  <button class="tab" data-tab="movimientos">📊 Movimientos</button>
+  <button class="tab" data-tab="mantenimientos">🔧 Mantenimiento</button>
+  <button class="tab" data-tab="entregas">📄 Entregas</button>
+  <button class="tab" data-tab="asistencia">🧑‍🎓 Asistencia</button>
+</div>
+
+<div class="content">
+  <div class="panel active" id="panel-inventario">
+    <input class="search" id="buscar-inv" placeholder="🔍 Buscar recurso…">
+    <div id="tabla-inventario"></div>
+  </div>
+  <div class="panel" id="panel-movimientos">
+    <input class="search" id="buscar-mov" placeholder="🔍 Buscar movimiento…">
+    <div id="tabla-movimientos"></div>
+  </div>
+  <div class="panel" id="panel-mantenimientos">
+    <input class="search" id="buscar-mant" placeholder="🔍 Buscar mantenimiento…">
+    <div id="tabla-mantenimientos"></div>
+  </div>
+  <div class="panel" id="panel-entregas">
+    <input class="search" id="buscar-ent" placeholder="🔍 Buscar entrega…">
+    <div id="tabla-entregas"></div>
+  </div>
+  <div class="panel" id="panel-asistencia">
+    <input class="search" id="buscar-asis" placeholder="🔍 Buscar persona…">
+    <div id="tabla-asistencia"></div>
+  </div>
+</div>
+
+<footer>Datos actualizados manualmente desde la aplicación de escritorio ·
+  Solo lectura</footer>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-titulo">Detalle</h2>
+      <button class="modal-close" onclick="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+let DATA = { inventario: [], movimientos: [], mantenimientos: [],
+             entregas: [], asistencia: [] };
+
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function num(n) {
+  const x = parseFloat(n) || 0;
+  return x % 1 === 0 ? x.toString() : x.toFixed(2);
+}
+
+// ---------- TAB: cambiar pestaña ----------
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------- MODAL ----------
+function abrirModal(titulo, html) {
+  document.getElementById('modal-titulo').textContent = titulo;
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-bg').classList.add('show');
+}
+function cerrarModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+}
+document.getElementById('modal-bg').addEventListener('click', e => {
+  if (e.target.id === 'modal-bg') cerrarModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') cerrarModal();
+});
+
+// ---------- INVENTARIO ----------
+function renderInventario(filtro='') {
+  const cont = document.getElementById('tabla-inventario');
+  const f = filtro.toLowerCase().trim();
+  const rows = DATA.inventario.filter(r => {
+    if (!f) return true;
+    return (r.nombre + ' ' + r.tipo + ' ' + r.marca + ' ' + r.codigo)
+           .toLowerCase().includes(f);
+  });
+  if (!rows.length) {
+    cont.innerHTML = '<div class="sin-datos">Sin resultados</div>'; return;
+  }
+  let html = '<table><thead><tr>' +
+    '<th>Nombre</th><th>Tipo</th><th>Total</th><th>Reservado</th>' +
+    '<th>En Uso</th><th>Disponible</th><th>Unidad</th><th>Ubicación</th>' +
+    '</tr></thead><tbody>';
+  rows.forEach(r => {
+    const critico = r.stock_minimo > 0 && r.total <= r.stock_minimo;
+    html += `<tr class="${critico ? 'critico' : ''}" data-id="${r.id}">` +
+      `<td>${esc(r.nombre)}</td><td>${esc(r.tipo)}</td>` +
+      `<td>${num(r.total)}</td><td>${num(r.reservado)}</td>` +
+      `<td>${num(r.en_uso)}</td><td>${num(r.disponible)}</td>` +
+      `<td>${esc(r.unidad)}</td><td>${esc(r.ubicacion_externa)}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+  cont.querySelectorAll('tbody tr').forEach(tr => {
+    tr.addEventListener('dblclick', () => {
+      const id = parseInt(tr.dataset.id);
+      const r = DATA.inventario.find(x => x.id === id);
+      if (r) abrirModal('📦 ' + r.nombre, detalleRecurso(r));
+    });
+  });
+}
+
+function detalleRecurso(r) {
+  const filas = [
+    ['Código', r.codigo], ['Tipo', r.tipo], ['Marca', r.marca],
+    ['Modelo', r.modelo], ['Serie', r.serie], ['Estado', r.estado],
+    ['Total', num(r.total) + ' ' + r.unidad],
+    ['Reservado', num(r.reservado)], ['En Uso', num(r.en_uso)],
+    ['Disponible', num(r.disponible)],
+    ['Stock mínimo', num(r.stock_minimo)],
+    ['Ubicación externa', r.ubicacion_externa],
+    ['Ubicación interna', r.ubicacion_interna],
+    ['Fecha vencimiento', r.fecha_vencimiento],
+    ['Descripción', r.descripcion], ['Observaciones', r.observaciones]
+  ];
+  let html = '<div class="detalle-grid">';
+  filas.forEach(([k, v]) => {
+    if (v === '' || v === null || v === undefined) return;
+    html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
+  });
+  html += '</div>';
+  // Movimientos de este recurso
+  const movs = DATA.movimientos.filter(m => m.recurso === r.nombre).slice(0, 20);
+  if (movs.length) {
+    html += '<h3 style="margin-top:18px;font-size:14px;color:#1a237e">' +
+            'Últimos movimientos</h3>';
+    html += '<table style="margin-top:8px"><thead><tr>' +
+      '<th>Tipo</th><th>Cantidad</th><th>Fecha</th><th>Usuario</th>' +
+      '</tr></thead><tbody>';
+    movs.forEach(m => {
+      html += `<tr><td>${esc(m.tipo_mov)}</td>` +
+        `<td>${num(m.cantidad)} ${esc(m.unidad)}</td>` +
+        `<td>${esc(m.fecha)}</td><td>${esc(m.usuario)}</td></tr>`;
+    });
+    html += '</tbody></table>';
+  }
+  return html;
+}
+
+// ---------- MOVIMIENTOS ----------
+function renderMovimientos(filtro='') {
+  const cont = document.getElementById('tabla-movimientos');
+  const f = filtro.toLowerCase().trim();
+  const rows = DATA.movimientos.filter(r => {
+    if (!f) return true;
+    return (r.recurso + ' ' + r.tipo_mov + ' ' + r.usuario).toLowerCase().includes(f);
+  });
+  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin movimientos</div>'; return; }
+  let html = '<table><thead><tr>' +
+    '<th>Recurso</th><th>Tipo</th><th>Movimiento</th><th>Cantidad</th>' +
+    '<th>Fecha</th><th>Usuario</th></tr></thead><tbody>';
+  rows.forEach((r, i) => {
+    html += `<tr data-i="${i}"><td>${esc(r.recurso)}</td>` +
+      `<td>${esc(r.tipo_recurso)}</td><td>${esc(r.tipo_mov)}</td>` +
+      `<td>${num(r.cantidad)} ${esc(r.unidad)}</td>` +
+      `<td>${esc(r.fecha)}</td><td>${esc(r.usuario)}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+  cont.querySelectorAll('tbody tr').forEach(tr => {
+    tr.addEventListener('dblclick', () => {
+      const r = rows[parseInt(tr.dataset.i)];
+      abrirModal('📊 Movimiento #' + r.id, detalleSimple([
+        ['Recurso', r.recurso], ['Tipo', r.tipo_recurso],
+        ['Movimiento', r.tipo_mov],
+        ['Cantidad', num(r.cantidad) + ' ' + r.unidad],
+        ['Fecha', r.fecha], ['Usuario', r.usuario]
+      ]));
+    });
+  });
+}
+
+// ---------- MANTENIMIENTOS ----------
+function renderMantenimientos(filtro='') {
+  const cont = document.getElementById('tabla-mantenimientos');
+  const f = filtro.toLowerCase().trim();
+  const rows = DATA.mantenimientos.filter(r => {
+    if (!f) return true;
+    return (r.recurso + ' ' + r.tipo_mant + ' ' + r.estado).toLowerCase().includes(f);
+  });
+  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin mantenimientos</div>'; return; }
+  let html = '<table><thead><tr>' +
+    '<th>Recurso</th><th>Tipo</th><th>Mant.</th><th>Programado</th>' +
+    '<th>Estado</th><th>Responsable</th></tr></thead><tbody>';
+  rows.forEach((r, i) => {
+    const badge = r.estado === 'Finalizado' ? 'verde'
+                : r.estado === 'En Proceso' ? 'naranja' : 'azul';
+    html += `<tr data-i="${i}"><td>${esc(r.recurso)}</td>` +
+      `<td>${esc(r.tipo_recurso)}</td><td>${esc(r.tipo_mant)}</td>` +
+      `<td>${esc(r.fecha_prog)} ${esc(r.hora_inicio)} → ${esc(r.fecha_fin)} ${esc(r.hora_fin)}</td>` +
+      `<td><span class="badge ${badge}">${esc(r.estado)}</span></td>` +
+      `<td>${esc(r.responsable)}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+  cont.querySelectorAll('tbody tr').forEach(tr => {
+    tr.addEventListener('dblclick', () => {
+      const r = rows[parseInt(tr.dataset.i)];
+      abrirModal('🔧 Mantenimiento #' + r.id, detalleSimple([
+        ['Recurso', r.recurso], ['Tipo recurso', r.tipo_recurso],
+        ['Tipo mantenimiento', r.tipo_mant],
+        ['Programado', r.fecha_prog + ' ' + r.hora_inicio],
+        ['Fin estimado', r.fecha_fin + ' ' + r.hora_fin],
+        ['Estado', r.estado], ['Responsable', r.responsable],
+        ['Estado anterior', r.estado_anterior],
+        ['Estado nuevo', r.estado_nuevo],
+        ['Restricciones', r.restricciones], ['Logros', r.logros],
+        ['Devolución', r.fecha_devolucion + ' ' + r.hora_devolucion],
+        ['Descripción', r.descripcion]
+      ]));
+    });
+  });
+}
+
+// ---------- ENTREGAS ----------
+function renderEntregas(filtro='') {
+  const cont = document.getElementById('tabla-entregas');
+  const f = filtro.toLowerCase().trim();
+  const rows = DATA.entregas.filter(r => {
+    if (!f) return true;
+    return (r.recurso + ' ' + r.solicitante + ' ' + r.proyecto)
+           .toLowerCase().includes(f);
+  });
+  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin entregas</div>'; return; }
+  let html = '<table><thead><tr>' +
+    '<th>Recurso</th><th>Tipo</th><th>Entregado</th><th>Devuelto</th>' +
+    '<th>Consumido</th><th>Solicitante</th><th>Fecha</th></tr></thead><tbody>';
+  rows.forEach((r, i) => {
+    html += `<tr data-i="${i}"><td>${esc(r.recurso)}</td>` +
+      `<td>${esc(r.tipo)}</td><td>${num(r.entregado)}</td>` +
+      `<td>${num(r.devuelto)}</td><td>${num(r.consumido)}</td>` +
+      `<td>${esc(r.solicitante)}</td><td>${esc(r.fecha)}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+  cont.querySelectorAll('tbody tr').forEach(tr => {
+    tr.addEventListener('dblclick', () => {
+      const r = rows[parseInt(tr.dataset.i)];
+      abrirModal('📄 Entrega · Ficha #' + r.id_ficha, detalleSimple([
+        ['Recurso', r.recurso], ['Tipo', r.tipo],
+        ['Solicitud', '#' + r.id_solicitud], ['Ficha', '#' + r.id_ficha],
+        ['Entregado', num(r.entregado)], ['Devuelto', num(r.devuelto)],
+        ['Consumido', num(r.consumido)], ['Fecha', r.fecha],
+        ['Hora', r.hora], ['Estado ficha', r.estado_ficha],
+        ['Solicitante', r.solicitante], ['Proyecto', r.proyecto]
+      ]));
+    });
+  });
+}
+
+// ---------- ASISTENCIA ----------
+function renderAsistencia(filtro='') {
+  const cont = document.getElementById('tabla-asistencia');
+  const f = filtro.toLowerCase().trim();
+  const rows = DATA.asistencia.filter(r => {
+    if (!f) return true;
+    return (r.nombre + ' ' + r.laboratorio + ' ' + r.fecha).toLowerCase().includes(f);
+  });
+  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin registros</div>'; return; }
+  let html = '<table><thead><tr>' +
+    '<th>Fecha</th><th>Persona</th><th>Tipo</th><th>Laboratorio</th>' +
+    '<th>Verificación</th><th>Ingreso</th><th>Salida</th></tr></thead><tbody>';
+  rows.forEach((r, i) => {
+    html += `<tr data-i="${i}"><td>${esc(r.fecha)}</td>` +
+      `<td>${esc(r.nombre)}</td><td>${esc(r.tipo)}</td>` +
+      `<td>${esc(r.laboratorio)}</td>` +
+      `<td>${esc(r.hora_verificacion)}</td>` +
+      `<td>${esc(r.hora_ingreso) || '-'}</td>` +
+      `<td>${esc(r.hora_salida) || '-'}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+  cont.querySelectorAll('tbody tr').forEach(tr => {
+    tr.addEventListener('dblclick', () => {
+      const r = rows[parseInt(tr.dataset.i)];
+      abrirModal('🧑‍🎓 Visita de ' + r.nombre, detalleSimple([
+        ['Fecha', r.fecha], ['Persona', r.nombre], ['Tipo', r.tipo],
+        ['Laboratorio', r.laboratorio],
+        ['Hora verificación', r.hora_verificacion],
+        ['Hora ingreso', r.hora_ingreso || '—'],
+        ['Hora salida', r.hora_salida || '—'],
+        ['Observación', r.observacion]
+      ]));
+    });
+  });
+}
+
+function detalleSimple(pares) {
+  let html = '<div class="detalle-grid">';
+  pares.forEach(([k, v]) => {
+    if (v === '' || v === null || v === undefined) return;
+    html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+// ---------- CARGA INICIAL ----------
+fetch('data.json?ts=' + Date.now())
+  .then(r => r.json())
+  .then(d => {
+    DATA = d;
+    document.getElementById('fecha-gen').textContent =
+      'Actualizado: ' + d.generado;
+    renderInventario();
+    renderMovimientos();
+    renderMantenimientos();
+    renderEntregas();
+    renderAsistencia();
+    document.getElementById('buscar-inv').addEventListener('input',
+      e => renderInventario(e.target.value));
+    document.getElementById('buscar-mov').addEventListener('input',
+      e => renderMovimientos(e.target.value));
+    document.getElementById('buscar-mant').addEventListener('input',
+      e => renderMantenimientos(e.target.value));
+    document.getElementById('buscar-ent').addEventListener('input',
+      e => renderEntregas(e.target.value));
+    document.getElementById('buscar-asis').addEventListener('input',
+      e => renderAsistencia(e.target.value));
+  })
+  .catch(err => {
+    document.body.innerHTML =
+      '<div class="sin-datos">Error cargando data.json: ' + err + '</div>';
+  });
+</script>
+</body>
+</html>
