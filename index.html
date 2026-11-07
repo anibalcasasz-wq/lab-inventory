@@ -7,72 +7,64 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-       background: #f0f2f5; color: #212121; }
+       background: #f0f2f5; color: #212121; font-size: 14px; }
 header { background: linear-gradient(135deg, #1a237e, #283593);
          color: #fff; padding: 18px 24px; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
 header h1 { font-size: 20px; }
 header .sub { font-size: 12px; opacity: .8; margin-top: 4px; }
 .tabs { display: flex; background: #fff; border-bottom: 2px solid #e0e0e0;
-        overflow-x: auto; }
+        overflow-x: auto; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
 .tab { padding: 14px 22px; cursor: pointer; font-weight: 600; font-size: 14px;
        border: none; background: none; color: #616161;
-       border-bottom: 3px solid transparent; white-space: nowrap; }
+       border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.2s; }
 .tab:hover { background: #f5f5f5; }
-.tab.active { color: #1a237e; border-bottom-color: #1a237e; }
-.content { padding: 20px; }
+.tab.active { color: #1a237e; border-bottom-color: #1a237e; background: #e8eaf6; }
+.content { padding: 20px; max-width: 1400px; margin: 0 auto; }
 .panel { display: none; }
 .panel.active { display: block; }
-.search { margin-bottom: 12px; padding: 8px 12px; width: 100%;
-          max-width: 400px; border: 1px solid #ccc; border-radius: 4px;
-          font-size: 14px; }
-table { width: 100%; border-collapse: collapse; background: #fff;
-        box-shadow: 0 1px 4px rgba(0,0,0,.08); font-size: 13px; }
-th { background: #1a237e; color: #fff; padding: 10px 8px;
-     text-align: left; font-weight: 600; font-size: 12px;
-     position: sticky; top: 0; }
-td { padding: 8px; border-bottom: 1px solid #eee; }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: flex-end;
+              background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.filter-group { display: flex; flex-direction: column; }
+.filter-group label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+.filter-group input, .filter-group select { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+.filter-group input[type="text"] { min-width: 250px; }
+.table-container { background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #1a237e; color: #fff; padding: 12px 10px; text-align: left; font-weight: 600; font-size: 12px; position: sticky; top: 0; z-index: 10; }
+td { padding: 10px; border-bottom: 1px solid #eee; }
 tr:hover { background: #f5f9ff; cursor: pointer; }
 tr.critico { background: #ffebee; }
 tr.critico:hover { background: #ffcdd2; }
-.sin-datos { padding: 40px; text-align: center; color: #9e9e9e;
-             font-style: italic; }
-.modal-bg { display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,.6); z-index: 1000;
-            align-items: center; justify-content: center; padding: 20px; }
+.sin-datos { padding: 40px; text-align: center; color: #9e9e9e; font-style: italic; }
+/* Modal */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
 .modal-bg.show { display: flex; }
-.modal { background: #fff; border-radius: 8px; max-width: 720px;
-         width: 100%; max-height: 90vh; overflow-y: auto;
-         box-shadow: 0 8px 32px rgba(0,0,0,.3); }
-.modal-header { background: #1a237e; color: #fff; padding: 16px 20px;
-                display: flex; justify-content: space-between;
-                align-items: center; border-radius: 8px 8px 0 0; }
+.modal { background: #fff; border-radius: 8px; max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+.modal-header { background: #1a237e; color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; position: sticky; top: 0; }
 .modal-header h2 { font-size: 17px; }
-.modal-close { background: none; border: none; color: #fff;
-               font-size: 24px; cursor: pointer; line-height: 1; }
+.modal-close { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; line-height: 1; }
 .modal-body { padding: 20px; }
-.detalle-grid { display: grid; grid-template-columns: 140px 1fr;
-                gap: 8px 12px; font-size: 13px; }
+.detalle-grid { display: grid; grid-template-columns: 160px 1fr; gap: 10px 15px; font-size: 13px; }
 .detalle-grid .lbl { font-weight: 600; color: #555; }
 .detalle-grid .val { color: #212121; word-break: break-word; }
-footer { text-align: center; padding: 20px; color: #9e9e9e;
-         font-size: 11px; }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
-         font-size: 11px; font-weight: 600; }
+footer { text-align: center; padding: 20px; color: #9e9e9e; font-size: 11px; }
+.badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
 .badge.verde { background: #c8e6c9; color: #2e7d32; }
 .badge.rojo { background: #ffcdd2; color: #c62828; }
 .badge.naranja { background: #ffe0b2; color: #e65100; }
 .badge.azul { background: #bbdefb; color: #1565c0; }
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-group input[type="text"] { min-width: 100%; }
   .detalle-grid { grid-template-columns: 1fr; }
-  .detalle-grid .lbl { margin-top: 6px; }
+  .detalle-grid .lbl { margin-top: 8px; }
 }
 </style>
 </head>
 <body>
 <header>
   <h1>🧬 Laboratorio Integrado de Investigación</h1>
-  <div class="sub">Universidad Continental — Vista de solo lectura ·
-    <span id="fecha-gen">cargando…</span></div>
+  <div class="sub">Universidad Continental — Vista de solo lectura · Actualizado: <span id="fecha-gen">cargando…</span></div>
 </header>
 
 <div class="tabs">
@@ -84,30 +76,115 @@ footer { text-align: center; padding: 20px; color: #9e9e9e;
 </div>
 
 <div class="content">
+  <!-- INVENTARIO -->
   <div class="panel active" id="panel-inventario">
-    <input class="search" id="buscar-inv" placeholder="🔍 Buscar recurso…">
-    <div id="tabla-inventario"></div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="inv-buscar" placeholder="Nombre, código, marca...">
+      </div>
+      <div class="filter-group">
+        <label>Tipo</label>
+        <select id="inv-tipo">
+          <option value="">Todos</option>
+          <option value="Equipo">Equipo</option>
+          <option value="Mueble">Mueble</option>
+          <option value="Reactivo">Reactivo</option>
+          <option value="Consumible">Consumible</option>
+          <option value="No Consumible">No Consumible</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Laboratorio / Ubicación</label>
+        <select id="inv-ubicacion"><option value="">Todas</option></select>
+      </div>
+    </div>
+    <div class="table-container" id="tabla-inventario"></div>
   </div>
+
+  <!-- MOVIMIENTOS -->
   <div class="panel" id="panel-movimientos">
-    <input class="search" id="buscar-mov" placeholder="🔍 Buscar movimiento…">
-    <div id="tabla-movimientos"></div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="mov-buscar" placeholder="Recurso, usuario, tipo...">
+      </div>
+      <div class="filter-group">
+        <label>Desde</label>
+        <input type="date" id="mov-desde">
+      </div>
+      <div class="filter-group">
+        <label>Hasta</label>
+        <input type="date" id="mov-hasta">
+      </div>
+    </div>
+    <div class="table-container" id="tabla-movimientos"></div>
   </div>
+
+  <!-- MANTENIMIENTOS -->
   <div class="panel" id="panel-mantenimientos">
-    <input class="search" id="buscar-mant" placeholder="🔍 Buscar mantenimiento…">
-    <div id="tabla-mantenimientos"></div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="mant-buscar" placeholder="Equipo, responsable...">
+      </div>
+      <div class="filter-group">
+        <label>Estado</label>
+        <select id="mant-estado">
+          <option value="">Todos</option>
+          <option value="Programado">Programado</option>
+          <option value="En Proceso">En Proceso</option>
+          <option value="Finalizado">Finalizado</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-container" id="tabla-mantenimientos"></div>
   </div>
+
+  <!-- ENTREGAS -->
   <div class="panel" id="panel-entregas">
-    <input class="search" id="buscar-ent" placeholder="🔍 Buscar entrega…">
-    <div id="tabla-entregas"></div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="ent-buscar" placeholder="Recurso, solicitante...">
+      </div>
+      <div class="filter-group">
+        <label>Desde</label>
+        <input type="date" id="ent-desde">
+      </div>
+      <div class="filter-group">
+        <label>Hasta</label>
+        <input type="date" id="ent-hasta">
+      </div>
+    </div>
+    <div class="table-container" id="tabla-entregas"></div>
   </div>
+
+  <!-- ASISTENCIA -->
   <div class="panel" id="panel-asistencia">
-    <input class="search" id="buscar-asis" placeholder="🔍 Buscar persona…">
-    <div id="tabla-asistencia"></div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="asis-buscar" placeholder="Nombre, observación...">
+      </div>
+      <div class="filter-group">
+        <label>Laboratorio</label>
+        <select id="asis-laboratorio"><option value="">Todos</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Desde</label>
+        <input type="date" id="asis-desde">
+      </div>
+      <div class="filter-group">
+        <label>Hasta</label>
+        <input type="date" id="asis-hasta">
+      </div>
+    </div>
+    <div class="table-container" id="tabla-asistencia"></div>
   </div>
 </div>
 
-<footer>Datos actualizados manualmente desde la aplicación de escritorio ·
-  Solo lectura</footer>
+<footer>Datos actualizados manualmente desde la aplicación de escritorio · Solo lectura</footer>
 
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
@@ -120,21 +197,31 @@ footer { text-align: center; padding: 20px; color: #9e9e9e;
 </div>
 
 <script>
-let DATA = { inventario: [], movimientos: [], mantenimientos: [],
-             entregas: [], asistencia: [] };
+let DATA = { inventario: [], movimientos: [], mantenimientos: [], entregas: [], asistencia: [] };
 
+// --- UTILIDADES ---
 function esc(s) {
   if (s === null || s === undefined) return '';
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }
 function num(n) {
   const x = parseFloat(n) || 0;
   return x % 1 === 0 ? x.toString() : x.toFixed(2);
 }
+function parseFecha(f) { 
+  if (!f) return null;
+  const parts = f.split('/');
+  return parts.length === 3 ? new Date(parts[2], parts[1]-1, parts[0]) : null;
+}
+function parseFechaISO(f) {
+  return f ? new Date(f) : null;
+}
+function coincide(txt, query) {
+  if (!query) return true;
+  return txt.toLowerCase().includes(query.toLowerCase());
+}
 
-// ---------- TAB: cambiar pestaña ----------
+// --- TABS ---
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -144,7 +231,7 @@ document.querySelectorAll('.tab').forEach(t => {
   });
 });
 
-// ---------- MODAL ----------
+// --- MODAL ---
 function abrirModal(titulo, html) {
   document.getElementById('modal-titulo').textContent = titulo;
   document.getElementById('modal-body').innerHTML = html;
@@ -160,262 +247,312 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') cerrarModal();
 });
 
-// ---------- INVENTARIO ----------
-function renderInventario(filtro='') {
+// --- LÓGICA DE FILTRADO Y RENDERIZADO ---
+function renderInventario() {
+  const term = document.getElementById('inv-buscar').value;
+  const tipo = document.getElementById('inv-tipo').value;
+  const ubi = document.getElementById('inv-ubicacion').value;
   const cont = document.getElementById('tabla-inventario');
-  const f = filtro.toLowerCase().trim();
+
   const rows = DATA.inventario.filter(r => {
-    if (!f) return true;
-    return (r.nombre + ' ' + r.tipo + ' ' + r.marca + ' ' + r.codigo)
-           .toLowerCase().includes(f);
+    if (tipo && r.tipo !== tipo) return false;
+    if (ubi && r.ubicacion_externa !== ubi) return false;
+    if (term) {
+      const t = `${r.nombre} ${r.codigo} ${r.marca} ${r.ubicacion_externa} ${r.ubicacion_interna}`;
+      if (!coincide(t, term)) return false;
+    }
+    return true;
   });
-  if (!rows.length) {
-    cont.innerHTML = '<div class="sin-datos">Sin resultados</div>'; return;
-  }
-  let html = '<table><thead><tr>' +
-    '<th>Nombre</th><th>Tipo</th><th>Total</th><th>Reservado</th>' +
-    '<th>En Uso</th><th>Disponible</th><th>Unidad</th><th>Ubicación</th>' +
-    '</tr></thead><tbody>';
+
+  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin resultados</div>'; return; }
+
+  let html = '<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Total</th><th>Reserv.</th><th>En Uso</th><th>Disp.</th><th>Unidad</th><th>Ubicación</th></tr></thead><tbody>';
   rows.forEach(r => {
     const critico = r.stock_minimo > 0 && r.total <= r.stock_minimo;
-    html += `<tr class="${critico ? 'critico' : ''}" data-id="${r.id}">` +
-      `<td>${esc(r.nombre)}</td><td>${esc(r.tipo)}</td>` +
+    html += `<tr class="${critico ? 'critico' : ''}" onclick='verDetalleInv(${r.id})'>` +
+      `<td><strong>${esc(r.nombre)}</strong></td><td>${esc(r.tipo)}</td>` +
       `<td>${num(r.total)}</td><td>${num(r.reservado)}</td>` +
       `<td>${num(r.en_uso)}</td><td>${num(r.disponible)}</td>` +
       `<td>${esc(r.unidad)}</td><td>${esc(r.ubicacion_externa)}</td></tr>`;
   });
   html += '</tbody></table>';
   cont.innerHTML = html;
-  cont.querySelectorAll('tbody tr').forEach(tr => {
-    tr.addEventListener('dblclick', () => {
-      const id = parseInt(tr.dataset.id);
-      const r = DATA.inventario.find(x => x.id === id);
-      if (r) abrirModal('📦 ' + r.nombre, detalleRecurso(r));
-    });
-  });
 }
 
-function detalleRecurso(r) {
-  const filas = [
+function verDetalleInv(id) {
+  const r = DATA.inventario.find(x => x.id === id);
+  if (!r) return;
+  let html = '<div class="detalle-grid">';
+  const campos = [
     ['Código', r.codigo], ['Tipo', r.tipo], ['Marca', r.marca],
     ['Modelo', r.modelo], ['Serie', r.serie], ['Estado', r.estado],
-    ['Total', num(r.total) + ' ' + r.unidad],
-    ['Reservado', num(r.reservado)], ['En Uso', num(r.en_uso)],
-    ['Disponible', num(r.disponible)],
-    ['Stock mínimo', num(r.stock_minimo)],
-    ['Ubicación externa', r.ubicacion_externa],
-    ['Ubicación interna', r.ubicacion_interna],
-    ['Fecha vencimiento', r.fecha_vencimiento],
+    ['Total', num(r.total) + ' ' + r.unidad], ['Reservado', num(r.reservado)],
+    ['En Uso', num(r.en_uso)], ['Disponible', num(r.disponible)],
+    ['Stock mínimo', num(r.stock_minimo)], ['Ubicación externa', r.ubicacion_externa],
+    ['Ubicación interna', r.ubicacion_interna], ['Vencimiento', r.fecha_vencimiento],
     ['Descripción', r.descripcion], ['Observaciones', r.observaciones]
   ];
-  let html = '<div class="detalle-grid">';
-  filas.forEach(([k, v]) => {
-    if (v === '' || v === null || v === undefined) return;
-    html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
+  campos.forEach(([k, v]) => {
+    if (v && v !== '-') html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
   });
   html += '</div>';
-  // Movimientos de este recurso
-  const movs = DATA.movimientos.filter(m => m.recurso === r.nombre).slice(0, 20);
-  if (movs.length) {
-    html += '<h3 style="margin-top:18px;font-size:14px;color:#1a237e">' +
-            'Últimos movimientos</h3>';
-    html += '<table style="margin-top:8px"><thead><tr>' +
-      '<th>Tipo</th><th>Cantidad</th><th>Fecha</th><th>Usuario</th>' +
-      '</tr></thead><tbody>';
-    movs.forEach(m => {
-      html += `<tr><td>${esc(m.tipo_mov)}</td>` +
-        `<td>${num(m.cantidad)} ${esc(m.unidad)}</td>` +
-        `<td>${esc(m.fecha)}</td><td>${esc(m.usuario)}</td></tr>`;
-    });
-    html += '</tbody></table>';
-  }
-  return html;
+  abrirModal('📦 ' + r.nombre, html);
 }
 
-// ---------- MOVIMIENTOS ----------
-function renderMovimientos(filtro='') {
+function renderMovimientos() {
+  const term = document.getElementById('mov-buscar').value;
+  const desde = document.getElementById('mov-desde').value;
+  const hasta = document.getElementById('mov-hasta').value;
   const cont = document.getElementById('tabla-movimientos');
-  const f = filtro.toLowerCase().trim();
+
   const rows = DATA.movimientos.filter(r => {
-    if (!f) return true;
-    return (r.recurso + ' ' + r.tipo_mov + ' ' + r.usuario).toLowerCase().includes(f);
+    if (term) {
+      const t = `${r.recurso} ${r.usuario} ${r.tipo_mov}`;
+      if (!coincide(t, term)) return false;
+    }
+    if (desde || hasta) {
+      const f = parseFecha(r.fecha);
+      if (!f) return false;
+      if (desde && f < new Date(desde)) return false;
+      if (hasta && f > new Date(hasta + 'T23:59:59')) return false;
+    }
+    return true;
   });
+
   if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin movimientos</div>'; return; }
-  let html = '<table><thead><tr>' +
-    '<th>Recurso</th><th>Tipo</th><th>Movimiento</th><th>Cantidad</th>' +
-    '<th>Fecha</th><th>Usuario</th></tr></thead><tbody>';
+
+  let html = '<table><thead><tr><th>Fecha</th><th>Recurso</th><th>Tipo</th><th>Movimiento</th><th>Cantidad</th><th>Usuario</th></tr></thead><tbody>';
   rows.forEach((r, i) => {
-    html += `<tr data-i="${i}"><td>${esc(r.recurso)}</td>` +
+    html += `<tr onclick='verDetalleMov(${i})'>` +
+      `<td>${esc(r.fecha)}</td><td>${esc(r.recurso)}</td>` +
       `<td>${esc(r.tipo_recurso)}</td><td>${esc(r.tipo_mov)}</td>` +
-      `<td>${num(r.cantidad)} ${esc(r.unidad)}</td>` +
-      `<td>${esc(r.fecha)}</td><td>${esc(r.usuario)}</td></tr>`;
+      `<td>${num(r.cantidad)} ${esc(r.unidad)}</td><td>${esc(r.usuario)}</td></tr>`;
   });
   html += '</tbody></table>';
   cont.innerHTML = html;
-  cont.querySelectorAll('tbody tr').forEach(tr => {
-    tr.addEventListener('dblclick', () => {
-      const r = rows[parseInt(tr.dataset.i)];
-      abrirModal('📊 Movimiento #' + r.id, detalleSimple([
-        ['Recurso', r.recurso], ['Tipo', r.tipo_recurso],
-        ['Movimiento', r.tipo_mov],
-        ['Cantidad', num(r.cantidad) + ' ' + r.unidad],
-        ['Fecha', r.fecha], ['Usuario', r.usuario]
-      ]));
-    });
-  });
+  window._movsFiltrados = rows; // guardar para el modal
 }
 
-// ---------- MANTENIMIENTOS ----------
-function renderMantenimientos(filtro='') {
-  const cont = document.getElementById('tabla-mantenimientos');
-  const f = filtro.toLowerCase().trim();
-  const rows = DATA.mantenimientos.filter(r => {
-    if (!f) return true;
-    return (r.recurso + ' ' + r.tipo_mant + ' ' + r.estado).toLowerCase().includes(f);
+function verDetalleMov(i) {
+  const r = window._movsFiltrados[i];
+  let html = '<div class="detalle-grid">';
+  const campos = [
+    ['Fecha', r.fecha], ['Recurso', r.recurso], ['Tipo', r.tipo_recurso],
+    ['Movimiento', r.tipo_mov], ['Cantidad', num(r.cantidad) + ' ' + r.unidad],
+    ['Usuario', r.usuario], ['ID Movimiento', r.id]
+  ];
+  campos.forEach(([k, v]) => {
+    if (v) html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
   });
+  html += '</div>';
+  abrirModal('📊 Detalle de Movimiento', html);
+}
+
+function renderMantenimientos() {
+  const term = document.getElementById('mant-buscar').value;
+  const estado = document.getElementById('mant-estado').value;
+  const cont = document.getElementById('tabla-mantenimientos');
+
+  const rows = DATA.mantenimientos.filter(r => {
+    if (estado && r.estado !== estado) return false;
+    if (term) {
+      const t = `${r.recurso} ${r.responsable} ${r.tipo_mant}`;
+      if (!coincide(t, term)) return false;
+    }
+    return true;
+  });
+
   if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin mantenimientos</div>'; return; }
-  let html = '<table><thead><tr>' +
-    '<th>Recurso</th><th>Tipo</th><th>Mant.</th><th>Programado</th>' +
-    '<th>Estado</th><th>Responsable</th></tr></thead><tbody>';
+
+  let html = '<table><thead><tr><th>Recurso</th><th>Tipo</th><th>Mantenimiento</th><th>Programado</th><th>Estado</th><th>Responsable</th></tr></thead><tbody>';
   rows.forEach((r, i) => {
-    const badge = r.estado === 'Finalizado' ? 'verde'
-                : r.estado === 'En Proceso' ? 'naranja' : 'azul';
-    html += `<tr data-i="${i}"><td>${esc(r.recurso)}</td>` +
-      `<td>${esc(r.tipo_recurso)}</td><td>${esc(r.tipo_mant)}</td>` +
-      `<td>${esc(r.fecha_prog)} ${esc(r.hora_inicio)} → ${esc(r.fecha_fin)} ${esc(r.hora_fin)}</td>` +
+    const badge = r.estado === 'Finalizado' ? 'verde' : r.estado === 'En Proceso' ? 'naranja' : 'azul';
+    html += `<tr onclick='verDetalleMant(${i})'>` +
+      `<td><strong>${esc(r.recurso)}</strong></td><td>${esc(r.tipo_recurso)}</td>` +
+      `<td>${esc(r.tipo_mant)}</td>` +
+      `<td>${esc(r.fecha_prog)} ${esc(r.hora_inicio)}<br>→ ${esc(r.fecha_fin)} ${esc(r.hora_fin)}</td>` +
       `<td><span class="badge ${badge}">${esc(r.estado)}</span></td>` +
       `<td>${esc(r.responsable)}</td></tr>`;
   });
   html += '</tbody></table>';
   cont.innerHTML = html;
-  cont.querySelectorAll('tbody tr').forEach(tr => {
-    tr.addEventListener('dblclick', () => {
-      const r = rows[parseInt(tr.dataset.i)];
-      abrirModal('🔧 Mantenimiento #' + r.id, detalleSimple([
-        ['Recurso', r.recurso], ['Tipo recurso', r.tipo_recurso],
-        ['Tipo mantenimiento', r.tipo_mant],
-        ['Programado', r.fecha_prog + ' ' + r.hora_inicio],
-        ['Fin estimado', r.fecha_fin + ' ' + r.hora_fin],
-        ['Estado', r.estado], ['Responsable', r.responsable],
-        ['Estado anterior', r.estado_anterior],
-        ['Estado nuevo', r.estado_nuevo],
-        ['Restricciones', r.restricciones], ['Logros', r.logros],
-        ['Devolución', r.fecha_devolucion + ' ' + r.hora_devolucion],
-        ['Descripción', r.descripcion]
-      ]));
-    });
-  });
+  window._mantsFiltrados = rows;
 }
 
-// ---------- ENTREGAS ----------
-function renderEntregas(filtro='') {
-  const cont = document.getElementById('tabla-entregas');
-  const f = filtro.toLowerCase().trim();
-  const rows = DATA.entregas.filter(r => {
-    if (!f) return true;
-    return (r.recurso + ' ' + r.solicitante + ' ' + r.proyecto)
-           .toLowerCase().includes(f);
-  });
-  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin entregas</div>'; return; }
-  let html = '<table><thead><tr>' +
-    '<th>Recurso</th><th>Tipo</th><th>Entregado</th><th>Devuelto</th>' +
-    '<th>Consumido</th><th>Solicitante</th><th>Fecha</th></tr></thead><tbody>';
-  rows.forEach((r, i) => {
-    html += `<tr data-i="${i}"><td>${esc(r.recurso)}</td>` +
-      `<td>${esc(r.tipo)}</td><td>${num(r.entregado)}</td>` +
-      `<td>${num(r.devuelto)}</td><td>${num(r.consumido)}</td>` +
-      `<td>${esc(r.solicitante)}</td><td>${esc(r.fecha)}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  cont.innerHTML = html;
-  cont.querySelectorAll('tbody tr').forEach(tr => {
-    tr.addEventListener('dblclick', () => {
-      const r = rows[parseInt(tr.dataset.i)];
-      abrirModal('📄 Entrega · Ficha #' + r.id_ficha, detalleSimple([
-        ['Recurso', r.recurso], ['Tipo', r.tipo],
-        ['Solicitud', '#' + r.id_solicitud], ['Ficha', '#' + r.id_ficha],
-        ['Entregado', num(r.entregado)], ['Devuelto', num(r.devuelto)],
-        ['Consumido', num(r.consumido)], ['Fecha', r.fecha],
-        ['Hora', r.hora], ['Estado ficha', r.estado_ficha],
-        ['Solicitante', r.solicitante], ['Proyecto', r.proyecto]
-      ]));
-    });
-  });
-}
-
-// ---------- ASISTENCIA ----------
-function renderAsistencia(filtro='') {
-  const cont = document.getElementById('tabla-asistencia');
-  const f = filtro.toLowerCase().trim();
-  const rows = DATA.asistencia.filter(r => {
-    if (!f) return true;
-    return (r.nombre + ' ' + r.laboratorio + ' ' + r.fecha).toLowerCase().includes(f);
-  });
-  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin registros</div>'; return; }
-  let html = '<table><thead><tr>' +
-    '<th>Fecha</th><th>Persona</th><th>Tipo</th><th>Laboratorio</th>' +
-    '<th>Verificación</th><th>Ingreso</th><th>Salida</th></tr></thead><tbody>';
-  rows.forEach((r, i) => {
-    html += `<tr data-i="${i}"><td>${esc(r.fecha)}</td>` +
-      `<td>${esc(r.nombre)}</td><td>${esc(r.tipo)}</td>` +
-      `<td>${esc(r.laboratorio)}</td>` +
-      `<td>${esc(r.hora_verificacion)}</td>` +
-      `<td>${esc(r.hora_ingreso) || '-'}</td>` +
-      `<td>${esc(r.hora_salida) || '-'}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  cont.innerHTML = html;
-  cont.querySelectorAll('tbody tr').forEach(tr => {
-    tr.addEventListener('dblclick', () => {
-      const r = rows[parseInt(tr.dataset.i)];
-      abrirModal('🧑‍🎓 Visita de ' + r.nombre, detalleSimple([
-        ['Fecha', r.fecha], ['Persona', r.nombre], ['Tipo', r.tipo],
-        ['Laboratorio', r.laboratorio],
-        ['Hora verificación', r.hora_verificacion],
-        ['Hora ingreso', r.hora_ingreso || '—'],
-        ['Hora salida', r.hora_salida || '—'],
-        ['Observación', r.observacion]
-      ]));
-    });
-  });
-}
-
-function detalleSimple(pares) {
+function verDetalleMant(i) {
+  const r = window._mantsFiltrados[i];
   let html = '<div class="detalle-grid">';
-  pares.forEach(([k, v]) => {
-    if (v === '' || v === null || v === undefined) return;
-    html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
+  const campos = [
+    ['Recurso', r.recurso], ['Tipo', r.tipo_recurso], ['Mantenimiento', r.tipo_mant],
+    ['Fecha Prog.', r.fecha_prog], ['Hora Inicio', r.hora_inicio],
+    ['Fecha Fin Est.', r.fecha_fin], ['Hora Fin', r.hora_fin],
+    ['Estado', r.estado], ['Responsable', r.responsable],
+    ['Descripción', r.descripcion], ['Estado Anterior', r.estado_anterior],
+    ['Estado Nuevo', r.estado_nuevo], ['Restricciones', r.restricciones],
+    ['Logros', r.logros], ['Fecha Devolución', r.fecha_devolucion],
+    ['Hora Devolución', r.hora_devolucion]
+  ];
+  campos.forEach(([k, v]) => {
+    if (v && v !== '-') html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
   });
   html += '</div>';
-  return html;
+  abrirModal('🔧 Detalle de Mantenimiento', html);
 }
 
-// ---------- CARGA INICIAL ----------
+function renderEntregas() {
+  const term = document.getElementById('ent-buscar').value;
+  const desde = document.getElementById('ent-desde').value;
+  const hasta = document.getElementById('ent-hasta').value;
+  const cont = document.getElementById('tabla-entregas');
+
+  const rows = DATA.entregas.filter(r => {
+    if (term) {
+      const t = `${r.recurso} ${r.solicitante} ${r.proyecto}`;
+      if (!coincide(t, term)) return false;
+    }
+    if (desde || hasta) {
+      const f = parseFecha(r.fecha);
+      if (!f) return false;
+      if (desde && f < new Date(desde)) return false;
+      if (hasta && f > new Date(hasta + 'T23:59:59')) return false;
+    }
+    return true;
+  });
+
+  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin entregas</div>'; return; }
+
+  let html = '<table><thead><tr><th>Fecha</th><th>Recurso</th><th>Entregado</th><th>Devuelto</th><th>Consumido</th><th>Solicitante</th></tr></thead><tbody>';
+  rows.forEach((r, i) => {
+    html += `<tr onclick='verDetalleEnt(${i})'>` +
+      `<td>${esc(r.fecha)}</td><td><strong>${esc(r.recurso)}</strong></td>` +
+      `<td>${num(r.entregado)}</td><td>${num(r.devuelto)}</td>` +
+      `<td>${num(r.consumido)}</td><td>${esc(r.solicitante)}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+  window._entsFiltradas = rows;
+}
+
+function verDetalleEnt(i) {
+  const r = window._entsFiltradas[i];
+  let html = '<div class="detalle-grid">';
+  const campos = [
+    ['Recurso', r.recurso], ['Tipo', r.tipo],
+    ['Solicitud N°', '#' + r.id_solicitud], ['Ficha N°', '#' + r.id_ficha],
+    ['Entregado', num(r.entregado)], ['Devuelto', num(r.devuelto)],
+    ['Consumido', num(r.consumido)], ['Fecha', r.fecha],
+    ['Hora', r.hora], ['Estado Ficha', r.estado_ficha],
+    ['Solicitante', r.solicitante], ['Proyecto', r.proyecto]
+  ];
+  campos.forEach(([k, v]) => {
+    if (v && v !== '-') html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
+  });
+  html += '</div>';
+  abrirModal('📄 Detalle de Entrega', html);
+}
+
+function renderAsistencia() {
+  const term = document.getElementById('asis-buscar').value;
+  const lab = document.getElementById('asis-laboratorio').value;
+  const desde = document.getElementById('asis-desde').value;
+  const hasta = document.getElementById('asis-hasta').value;
+  const cont = document.getElementById('tabla-asistencia');
+
+  const rows = DATA.asistencia.filter(r => {
+    if (lab && r.laboratorio !== lab) return false;
+    if (term) {
+      const t = `${r.nombre} ${r.observacion} ${r.tipo}`;
+      if (!coincide(t, term)) return false;
+    }
+    if (desde || hasta) {
+      const f = parseFecha(r.fecha);
+      if (!f) return false;
+      if (desde && f < new Date(desde)) return false;
+      if (hasta && f > new Date(hasta + 'T23:59:59')) return false;
+    }
+    return true;
+  });
+
+  if (!rows.length) { cont.innerHTML = '<div class="sin-datos">Sin registros</div>'; return; }
+
+  let html = '<table><thead><tr><th>Fecha</th><th>Persona</th><th>Tipo</th><th>Laboratorio</th><th>Verificación</th><th>Ingreso</th><th>Salida</th></tr></thead><tbody>';
+  rows.forEach((r, i) => {
+    html += `<tr onclick='verDetalleAsis(${i})'>` +
+      `<td>${esc(r.fecha)}</td><td><strong>${esc(r.nombre)}</strong></td>` +
+      `<td>${esc(r.tipo)}</td><td>${esc(r.laboratorio)}</td>` +
+      `<td>${esc(r.hora_verificacion)}</td>` +
+      `<td>${esc(r.hora_ingreso || '-')}</td>` +
+      `<td>${esc(r.hora_salida || '-')}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+  window._asisFiltradas = rows;
+}
+
+function verDetalleAsis(i) {
+  const r = window._asisFiltradas[i];
+  let html = '<div class="detalle-grid">';
+  const campos = [
+    ['Fecha', r.fecha], ['Persona', r.nombre], ['Tipo', r.tipo],
+    ['Laboratorio', r.laboratorio], ['Hora Verificación', r.hora_verificacion],
+    ['Hora Ingreso', r.hora_ingreso], ['Hora Salida', r.hora_salida],
+    ['Observación', r.observacion]
+  ];
+  campos.forEach(([k, v]) => {
+    if (v && v !== '-') html += `<div class="lbl">${esc(k)}</div><div class="val">${esc(v)}</div>`;
+  });
+  html += '</div>';
+  abrirModal('🧑‍🎓 Detalle de Visita', html);
+}
+
+// --- INICIALIZACIÓN ---
+function llenarSelects() {
+  const ubiSet = new Set();
+  DATA.inventario.forEach(r => { if (r.ubicacion_externa) ubiSet.add(r.ubicacion_externa); });
+  const ubiSelect = document.getElementById('inv-ubicacion');
+  Array.from(ubiSet).sort().forEach(u => {
+    ubiSelect.innerHTML += `<option value="${u}">${u}</option>`;
+  });
+
+  const labSet = new Set();
+  DATA.asistencia.forEach(r => { if (r.laboratorio) labSet.add(r.laboratorio); });
+  const labSelect = document.getElementById('asis-laboratorio');
+  Array.from(labSet).sort().forEach(l => {
+    labSelect.innerHTML += `<option value="${l}">${l}</option>`;
+  });
+}
+
 fetch('data.json?ts=' + Date.now())
   .then(r => r.json())
   .then(d => {
     DATA = d;
-    document.getElementById('fecha-gen').textContent =
-      'Actualizado: ' + d.generado;
+    document.getElementById('fecha-gen').textContent = d.generado;
+    llenarSelects();
     renderInventario();
     renderMovimientos();
     renderMantenimientos();
     renderEntregas();
     renderAsistencia();
-    document.getElementById('buscar-inv').addEventListener('input',
-      e => renderInventario(e.target.value));
-    document.getElementById('buscar-mov').addEventListener('input',
-      e => renderMovimientos(e.target.value));
-    document.getElementById('buscar-mant').addEventListener('input',
-      e => renderMantenimientos(e.target.value));
-    document.getElementById('buscar-ent').addEventListener('input',
-      e => renderEntregas(e.target.value));
-    document.getElementById('buscar-asis').addEventListener('input',
-      e => renderAsistencia(e.target.value));
+
+    // Eventos de filtrado
+    document.getElementById('inv-buscar').addEventListener('input', renderInventario);
+    document.getElementById('inv-tipo').addEventListener('change', renderInventario);
+    document.getElementById('inv-ubicacion').addEventListener('change', renderInventario);
+    document.getElementById('mov-buscar').addEventListener('input', renderMovimientos);
+    document.getElementById('mov-desde').addEventListener('change', renderMovimientos);
+    document.getElementById('mov-hasta').addEventListener('change', renderMovimientos);
+    document.getElementById('mant-buscar').addEventListener('input', renderMantenimientos);
+    document.getElementById('mant-estado').addEventListener('change', renderMantenimientos);
+    document.getElementById('ent-buscar').addEventListener('input', renderEntregas);
+    document.getElementById('ent-desde').addEventListener('change', renderEntregas);
+    document.getElementById('ent-hasta').addEventListener('change', renderEntregas);
+    document.getElementById('asis-buscar').addEventListener('input', renderAsistencia);
+    document.getElementById('asis-laboratorio').addEventListener('change', renderAsistencia);
+    document.getElementById('asis-desde').addEventListener('change', renderAsistencia);
+    document.getElementById('asis-hasta').addEventListener('change', renderAsistencia);
   })
   .catch(err => {
-    document.body.innerHTML =
-      '<div class="sin-datos">Error cargando data.json: ' + err + '</div>';
+    document.body.innerHTML = '<div class="sin-datos">Error cargando data.json: ' + err + '</div>';
   });
 </script>
 </body>
