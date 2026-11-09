@@ -1,5 +1,5 @@
 {
-  "generado": "07/11/2026 12:39:25",
+  "generado": "09/11/2026 15:41:05",
   "inventario": [
     {
       "id": 704,
@@ -29134,6 +29134,39 @@
       "hora_salida": "",
       "observacion": "",
       "laboratorio": "Laboratorio de Anatomía de la Madera"
+    },
+    {
+      "id": 106,
+      "fecha": "09/11/2026",
+      "nombre": "Saida",
+      "tipo": "Investigador",
+      "hora_verificacion": "12:30",
+      "hora_ingreso": "",
+      "hora_salida": "",
+      "observacion": "",
+      "laboratorio": "Laboratorio de Dendrocronología"
+    },
+    {
+      "id": 105,
+      "fecha": "09/11/2026",
+      "nombre": "Doris",
+      "tipo": "Otro",
+      "hora_verificacion": "12:30",
+      "hora_ingreso": "",
+      "hora_salida": "",
+      "observacion": "",
+      "laboratorio": "Laboratorio de Dendrocronología"
+    },
+    {
+      "id": 104,
+      "fecha": "09/11/2026",
+      "nombre": "Edilson Jimmy Requena Rojas",
+      "tipo": "Investigador",
+      "hora_verificacion": "12:30",
+      "hora_ingreso": "",
+      "hora_salida": "",
+      "observacion": "",
+      "laboratorio": "Laboratorio de Dendrocronología"
     },
     {
       "id": 9,
